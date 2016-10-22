@@ -1,0 +1,60 @@
+#!/bin/bash
+VERSION=0.1.0
+
+# Usage:
+#   marathon inputfile [inputfile...]
+#   marathon -h
+#   marathon -v
+
+: "${ORCABIN:?"Need to set ORCABIN to your ORCA installation."}"
+
+function help_page {
+  sed -ne '/#[^!]\(.*\)/{
+    /\/#/d
+    s/    //
+    s/# //p
+  }' "$0"
+}
+
+# Options:
+while getopts ":hv" opt "$@"; do
+  case $opt in
+    h)
+      # -h show this help message
+      help_page
+      exit 0
+      ;;
+    v)
+      # -v show version
+      echo "$(basename "$0")" "$VERSION"
+      exit 0
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+    :)
+      echo "Option -$OPTARG requires an argument." >&2
+      exit 1
+      ;;
+  esac
+done
+shift $((OPTIND-1))
+
+function exec_orca {
+  inputfile=$1
+
+  inputfile_basename=$(basename "$inputfile" ".inp")
+  $ORCABIN "${inputfile_basename}.inp" | tee "${inputfile_basename}.out"
+}
+
+for inputfile in "$@"; do
+  if [ -r "$inputfile" ]; then
+    exec_orca "$inputfile"
+  else
+    echo "  $inputfile does not exist or is not readable."
+    exit 1
+  fi
+done
+
+# Licensed under the MIT License (MIT)
