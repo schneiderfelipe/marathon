@@ -14,8 +14,10 @@ function help_page {
   }' "$0"
 }
 
+nprocs=1
+
 # Options:
-while getopts ":hv" opt "$@"; do
+while getopts ":hvn:" opt "$@"; do
   case $opt in
     h)
       # -h show this help message
@@ -26,6 +28,10 @@ while getopts ":hv" opt "$@"; do
       # -v show version
       echo "$(basename "$0")" "$VERSION"
       exit 0
+      ;;
+    n)
+      # -n number of processors
+      nprocs=$OPTARG
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -47,17 +53,36 @@ function exec_orca {
   : "${ORCABIN:?"ORCABIN must point to your ORCA installation."}"
 
   inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".inp")
 
   #  $ marathon orca {methane,ethane,n-propane}.inp
-  inputfile_basename=$(basename "$inputfile" ".inp")
-  $ORCABIN "${inputfile_basename}.inp" | tee "${inputfile_basename}.out"
+  $ORCABIN "${inputfile_basename}.inp" | \
+    tee "${inputfile_basename}.out"
+}
+
+function exec_adf {
+  : "${ADFBIN:?"ADFBIN must point to your ADF installation."}"
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".in")
+
+  #  $ marathon adf *f1.in *f2.in *eda.in
+  "$ADFBIN/adf" -n "$nprocs" < "${inputfile_basename}.in" | \
+    tee "${inputfile_basename}.out"
+
+  mv TAPE21 "${inputfile_basename}.t21"
 }
 
 for inputfile in "$@"; do
   if [ -r "$inputfile" ]; then
-    if [ "$program" = orca ]; then
-      exec_orca "$inputfile"
-    fi
+    case $program in
+      orca)
+        exec_orca "$inputfile"
+        ;;
+      adf)
+        exec_adf "$inputfile"
+        ;;
+    esac
   else
     echo "  $inputfile does not exist or is not readable."
     exit 1

@@ -17,5 +17,5 @@ You can even change versions by issuing
 
 ## TODO
 
-(A) Trap some useful signals in `marathon`
+(A) Trap some useful signals (e.g. HUP signal) within `marathon`
 (B) Make `marathon` go to each folder in order to run (make things such as `$ marathon */*.inp` work)
