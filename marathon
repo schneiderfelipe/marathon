@@ -54,6 +54,30 @@ shift $((OPTIND))
 
 # Examples:
 
+function exec_adf {
+  : "${ADFBIN:?"ADFBIN must point to your ADF installation."}"
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".in")
+
+  #  $ marathon adf *f1.in *f2.in *eda.in
+  "$ADFBIN/adf" -n "$nprocs" < "${inputfile_basename}.in" | \
+  tee "${inputfile_basename}.out"
+
+  mv TAPE21 "${inputfile_basename}.t21"
+}
+
+function exec_nwchem {
+  : "${NWCHEMBIN:?"NWCHEMBIN must point to your NWCHEM installation."}"
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".nw")
+
+  #  $ marathon nwchem *.nw
+  mpirun -np "$nprocs" $NWCHEMBIN "${inputfile_basename}.nw" | \
+    tee "${inputfile_basename}.out"
+}
+
 function exec_orca {
   : "${ORCABIN:?"ORCABIN must point to your ORCA installation."}"
 
@@ -65,27 +89,17 @@ function exec_orca {
     tee "${inputfile_basename}.out"
 }
 
-function exec_adf {
-  : "${ADFBIN:?"ADFBIN must point to your ADF installation."}"
-
-  inputfile=$1
-  inputfile_basename=$(basename "$inputfile" ".in")
-
-  #  $ marathon adf *f1.in *f2.in *eda.in
-  "$ADFBIN/adf" -n "$nprocs" < "${inputfile_basename}.in" | \
-    tee "${inputfile_basename}.out"
-
-  mv TAPE21 "${inputfile_basename}.t21"
-}
-
 for inputfile in "$@"; do
   if [ -r "$inputfile" ]; then
     case $program in
-      orca)
-        exec_orca "$inputfile"
-        ;;
       adf)
         exec_adf "$inputfile"
+        ;;
+      nwchem)
+        exec_nwchem "$inputfile"
+        ;;
+      orca)
+        exec_orca "$inputfile"
         ;;
     esac
   else
