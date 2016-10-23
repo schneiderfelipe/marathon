@@ -6,8 +6,6 @@ VERSION=0.1.0
 #   marathon -h
 #   marathon -v
 
-: "${ORCABIN:?"Need to set ORCABIN to your ORCA installation."}"
-
 function help_page {
   sed -ne '/#[^!]\(.*\)/{
     /\/#/d
@@ -42,6 +40,8 @@ done
 shift $((OPTIND-1))
 
 function exec_orca {
+  : "${ORCABIN:?"ORCABIN must point to your ORCA installation."}"
+
   inputfile=$1
 
   inputfile_basename=$(basename "$inputfile" ".inp")
