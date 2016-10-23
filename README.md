@@ -15,4 +15,3 @@ ORCA may thus *not* be in `PATH`.
 ## TODO
 
 (A) Trap some useful signals (e.g. HUP signal) within `marathon`
-(B) Make `marathon` go to each folder in order to run (make things such as `$ marathon */*.inp` work)

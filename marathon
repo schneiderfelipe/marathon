@@ -103,8 +103,12 @@ function exec_orca {
     tee "${inputfile_basename}.out"
 }
 
+called_from=$(pwd)
+
 for inputfile in "$@"; do
   if [ -r "$inputfile" ]; then
+    cd "$(dirname "$inputfile")"
+
     case $program in
       adf)
         exec_adf "$inputfile"
@@ -120,6 +124,8 @@ for inputfile in "$@"; do
     echo "  $inputfile does not exist or is not readable."
     exit 1
   fi
+
+  cd "$called_from"
 done
 
 # Licensed under the MIT License (MIT)
