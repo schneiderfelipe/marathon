@@ -2,7 +2,7 @@
 VERSION=0.1.0
 
 # Usage:
-#   marathon inputfile [inputfile...]
+#   marathon program inputfile [inputfile...]
 #   marathon -h
 #   marathon -v
 
@@ -37,20 +37,27 @@ while getopts ":hv" opt "$@"; do
       ;;
   esac
 done
-shift $((OPTIND-1))
+
+program=$1
+shift $((OPTIND))
+
+# Examples:
 
 function exec_orca {
   : "${ORCABIN:?"ORCABIN must point to your ORCA installation."}"
 
   inputfile=$1
 
+  #  $ marathon orca {methane,ethane,n-propane}.inp
   inputfile_basename=$(basename "$inputfile" ".inp")
   $ORCABIN "${inputfile_basename}.inp" | tee "${inputfile_basename}.out"
 }
 
 for inputfile in "$@"; do
   if [ -r "$inputfile" ]; then
-    exec_orca "$inputfile"
+    if [ "$program" = orca ]; then
+      exec_orca "$inputfile"
+    fi
   else
     echo "  $inputfile does not exist or is not readable."
     exit 1
