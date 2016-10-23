@@ -57,4 +57,5 @@ for inputfile in "$@"; do
   fi
 done
 
-# Licensed under the MIT License (MIT)
+# marathon <https://github.com/olympicene/marathon>
+# is licensed under the MIT License.
