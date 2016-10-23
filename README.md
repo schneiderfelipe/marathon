@@ -7,13 +7,10 @@ After downloading the tarball and using `cd` to go where the files are, simply d
 But `marathon` will need to know where ORCA is in your system.
 So set an environment variable in your `~/.bashrc` (or equivalent) as follows:
 
-    export ORCABIN="/path/to/your/orca"
+    export ORCABIN="/path/to/your/orca/"
 
-This should point to the absolute path to the ORCA binary.
+This should point to the absolute path to the ORCA binary parent directory.
 ORCA may thus *not* be in `PATH`.
-You can even change versions by issuing
-
-    $ ORCABIN="/path/to/another/orca" marathon *.inp
 
 ## TODO
 

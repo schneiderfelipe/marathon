@@ -49,43 +49,57 @@ while getopts ":hvn:" opt "$@"; do
   esac
 done
 
+shift $((OPTIND-1))
+
 program=$1
-shift $((OPTIND))
+shift
 
 # Examples:
 
 function exec_adf {
-  : "${ADFBIN:?"ADFBIN must point to your ADF installation."}"
+  if [ -z $ADFBIN ]; then
+    ADF=adf
+  else
+    ADF=$ADFBIN/adf
+  fi
 
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".in")
 
   #  $ marathon adf *f1.in *f2.in *eda.in
-  "$ADFBIN/adf" -n "$nprocs" < "${inputfile_basename}.in" | \
-  tee "${inputfile_basename}.out"
+  "$ADF" -n "$nprocs" < "${inputfile_basename}.in" | \
+    tee "${inputfile_basename}.out"
 
   mv TAPE21 "${inputfile_basename}.t21"
 }
 
 function exec_nwchem {
-  : "${NWCHEMBIN:?"NWCHEMBIN must point to your NWCHEM installation."}"
+  if [ -z $NWCHEMBIN ]; then
+    NWCHEM=nwchem
+  else
+    NWCHEM=$NWCHEMBIN/nwchem
+  fi
 
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".nw")
 
   #  $ marathon nwchem *.nw
-  mpirun -np "$nprocs" $NWCHEMBIN "${inputfile_basename}.nw" | \
+  mpirun -np "$nprocs" "$NWCHEM" "${inputfile_basename}.nw" | \
     tee "${inputfile_basename}.out"
 }
 
 function exec_orca {
-  : "${ORCABIN:?"ORCABIN must point to your ORCA installation."}"
+  if [ -z $ORCABIN ]; then
+    ORCA=orca
+  else
+    ORCA=$ORCABIN/orca
+  fi
 
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".inp")
 
   #  $ marathon orca {methane,ethane,n-propane}.inp
-  $ORCABIN "${inputfile_basename}.inp" | \
+  "$ORCA" "${inputfile_basename}.inp" | \
     tee "${inputfile_basename}.out"
 }
 
