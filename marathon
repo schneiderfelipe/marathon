@@ -49,28 +49,36 @@ while getopts ":hvn:" opt "$@"; do
   esac
 done
 
+shift $((OPTIND-1))
+
 program=$1
-shift $((OPTIND))
+shift
 
 # Examples:
 
 function exec_adf {
-  : "${ADFBIN:?"ADFBIN must point to your ADF installation."}"
-  ADF=$ADFBIN/adf
+  if [ -z $ADFBIN ]; then
+    ADF=adf
+  else
+    ADF=$ADFBIN/adf
+  fi
 
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".in")
 
   #  $ marathon adf *f1.in *f2.in *eda.in
   "$ADF" -n "$nprocs" < "${inputfile_basename}.in" | \
-  tee "${inputfile_basename}.out"
+    tee "${inputfile_basename}.out"
 
   mv TAPE21 "${inputfile_basename}.t21"
 }
 
 function exec_nwchem {
-  : "${NWCHEMBIN:?"NWCHEMBIN must point to your NWCHEM installation."}"
-  NWCHEM=$NWCHEMBIN/nwchem
+  if [ -z $NWCHEMBIN ]; then
+    NWCHEM=nwchem
+  else
+    NWCHEM=$NWCHEMBIN/nwchem
+  fi
 
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".nw")
@@ -81,8 +89,11 @@ function exec_nwchem {
 }
 
 function exec_orca {
-  : "${ORCABIN:?"ORCABIN must point to your ORCA installation."}"
-  ORCA=$ORCABIN/orca
+  if [ -z $ORCABIN ]; then
+    ORCA=orca
+  else
+    ORCA=$ORCABIN/orca
+  fi
 
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".inp")
