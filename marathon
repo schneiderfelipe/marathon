@@ -57,7 +57,7 @@ shift
 # Examples:
 
 function exec_adf {
-  if [ -z $ADFBIN ]; then
+  if [ -z "$ADFBIN" ]; then
     ADF=adf
   else
     ADF=$ADFBIN/adf
@@ -74,7 +74,7 @@ function exec_adf {
 }
 
 function exec_nwchem {
-  if [ -z $NWCHEMBIN ]; then
+  if [ -z "$NWCHEMBIN" ]; then
     NWCHEM=nwchem
   else
     NWCHEM=$NWCHEMBIN/nwchem
@@ -89,7 +89,7 @@ function exec_nwchem {
 }
 
 function exec_orca {
-  if [ -z $ORCABIN ]; then
+  if [ -z "$ORCABIN" ]; then
     ORCA=orca
   else
     ORCA=$ORCABIN/orca
@@ -103,8 +103,12 @@ function exec_orca {
     tee "${inputfile_basename}.out"
 }
 
+called_from=$(pwd)
+
 for inputfile in "$@"; do
   if [ -r "$inputfile" ]; then
+    cd "$(dirname "$inputfile")"
+
     case $program in
       adf)
         exec_adf "$inputfile"
@@ -120,6 +124,8 @@ for inputfile in "$@"; do
     echo "  $inputfile does not exist or is not readable."
     exit 1
   fi
+
+  cd "$called_from"
 done
 
 # marathon <https://github.com/olympicene/marathon>
