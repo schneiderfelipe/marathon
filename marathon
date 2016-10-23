@@ -56,12 +56,13 @@ shift $((OPTIND))
 
 function exec_adf {
   : "${ADFBIN:?"ADFBIN must point to your ADF installation."}"
+  ADF=$ADFBIN/adf
 
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".in")
 
   #  $ marathon adf *f1.in *f2.in *eda.in
-  "$ADFBIN/adf" -n "$nprocs" < "${inputfile_basename}.in" | \
+  "$ADF" -n "$nprocs" < "${inputfile_basename}.in" | \
   tee "${inputfile_basename}.out"
 
   mv TAPE21 "${inputfile_basename}.t21"
@@ -69,23 +70,25 @@ function exec_adf {
 
 function exec_nwchem {
   : "${NWCHEMBIN:?"NWCHEMBIN must point to your NWCHEM installation."}"
+  NWCHEM=$NWCHEMBIN/nwchem
 
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".nw")
 
   #  $ marathon nwchem *.nw
-  mpirun -np "$nprocs" $NWCHEMBIN "${inputfile_basename}.nw" | \
+  mpirun -np "$nprocs" "$NWCHEM" "${inputfile_basename}.nw" | \
     tee "${inputfile_basename}.out"
 }
 
 function exec_orca {
   : "${ORCABIN:?"ORCABIN must point to your ORCA installation."}"
+  ORCA=$ORCABIN/orca
 
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".inp")
 
   #  $ marathon orca {methane,ethane,n-propane}.inp
-  $ORCABIN "${inputfile_basename}.inp" | \
+  "$ORCA" "${inputfile_basename}.inp" | \
     tee "${inputfile_basename}.out"
 }
 
