@@ -1,15 +1,5 @@
 # marathon
 
-## Usage
-
-Here is how to use `marathon`:
-
-    $ marathon {methane,ethane,n-propane}.inp
-
-`marathon` may also be run under `nohup` as follows:
-
-    $ nohup marathon *.inp &
-
 ## Installation
 
 After downloading the tarball and using `cd` to go where the files are, simply do a `sudo make install` and everything will be installed.
