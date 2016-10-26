@@ -35,7 +35,7 @@ while getopts ":hvn:" opt "$@"; do
       exit 0
       ;;
     n)
-      # -n number of processors (does not currently work with ORCA)
+      # -n PROCS set number of processors (does not currently work with ORCA)
       nprocs=$OPTARG
       ;;
     \?)
