@@ -128,5 +128,5 @@ for inputfile in "$@"; do
   cd "$called_from"
 done
 
-# marathon <https://github.com/olympicene/marathon>
+# marathon <https://github.com/chemical-scripts/marathon>
 # is licensed under the MIT License.
