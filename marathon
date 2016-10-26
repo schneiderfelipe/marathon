@@ -1,14 +1,17 @@
 #!/bin/bash
-VERSION=0.1.0
+VERSION=0.4.0
 
 # Usage:
-#   marathon inputfile [inputfile...]
+#   marathon [-n processors] program inputfile [inputfile...]
 #   marathon -h
 #   marathon -v
 
-: "${ORCA_BIN:?"Need to set ORCA_BIN to your ORCA installation."}"
+function version_page {
+  echo "$(basename "$0")" "$VERSION"
+}
 
 function help_page {
+  version_page
   sed -ne '/#[^!]\(.*\)/{
     /\/#/d
     s/    //
@@ -16,8 +19,10 @@ function help_page {
   }' "$0"
 }
 
+nprocs=1
+
 # Options:
-while getopts ":hv" opt "$@"; do
+while getopts ":hvn:" opt "$@"; do
   case $opt in
     h)
       # -h show this help message
@@ -26,8 +31,12 @@ while getopts ":hv" opt "$@"; do
       ;;
     v)
       # -v show version
-      echo "$(basename "$0")" "$VERSION"
+      version_page
       exit 0
+      ;;
+    n)
+      # -n number of processors (does not currently work with ORCA)
+      nprocs=$OPTARG
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -39,22 +48,85 @@ while getopts ":hv" opt "$@"; do
       ;;
   esac
 done
+
 shift $((OPTIND-1))
 
-function exec_orca {
-  inputfile=$1
+program=$1
+shift
 
-  inputfile_basename=$(basename "$inputfile" ".inp")
-  $ORCA_BIN "${inputfile_basename}.inp" | tee "${inputfile_basename}.out"
+# Examples:
+
+function exec_adf {
+  if [ -z "$ADFBIN" ]; then
+    ADF=adf
+  else
+    ADF=$ADFBIN/adf
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".in")
+
+  #  $ marathon -n 28 adf *f1.in *f2.in *eda.in
+  "$ADF" -n "$nprocs" < "${inputfile_basename}.in" | \
+    tee "${inputfile_basename}.out"
+
+  mv TAPE21 "${inputfile_basename}.t21"
 }
+
+function exec_nwchem {
+  if [ -z "$NWCHEMBIN" ]; then
+    NWCHEM=nwchem
+  else
+    NWCHEM=$NWCHEMBIN/nwchem
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".nw")
+
+  #  $ marathon -n 2 nwchem *.nw
+  mpirun -np "$nprocs" "$NWCHEM" "${inputfile_basename}.nw" | \
+    tee "${inputfile_basename}.out"
+}
+
+function exec_orca {
+  if [ -z "$ORCABIN" ]; then
+    ORCA=orca
+  else
+    ORCA=$ORCABIN/orca
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".inp")
+
+  #  $ marathon orca {methane,ethane,n-propane}.inp
+  "$ORCA" "${inputfile_basename}.inp" | \
+    tee "${inputfile_basename}.out"
+}
+
+called_from=$(pwd)
 
 for inputfile in "$@"; do
   if [ -r "$inputfile" ]; then
-    exec_orca "$inputfile"
+    cd "$(dirname "$inputfile")"
+
+    case $program in
+      adf)
+        exec_adf "$inputfile"
+        ;;
+      nwchem)
+        exec_nwchem "$inputfile"
+        ;;
+      orca)
+        exec_orca "$inputfile"
+        ;;
+    esac
   else
     echo "  $inputfile does not exist or is not readable."
     exit 1
   fi
+
+  cd "$called_from"
 done
 
-# Licensed under the MIT License (MIT)
+# marathon <https://github.com/chemical-scripts/marathon>
+# is licensed under the MIT License.
