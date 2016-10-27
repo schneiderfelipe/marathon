@@ -21,4 +21,5 @@ ORCA may thus *not* be in `PATH`.
 ## TODO
 
 - (A) Trap some useful signals (e.g. HUP signal) within `marathon`.
+- (B) Set number of threads for ORCA using the command line.
 - (B) Implement quiet (`-q`) mode.
