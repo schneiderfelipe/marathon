@@ -35,7 +35,7 @@ while getopts ":hvn:" opt "$@"; do
       exit 0
       ;;
     n)
-      # -n PROCS set number of processors (does not currently work with ORCA)
+      # -n PROCS set number of processors (does not currently work with ORCA or MOPAC)
       nprocs=$OPTARG
       ;;
     \?)
@@ -71,6 +71,20 @@ function exec_adf {
     tee "${inputfile_basename}.out"
 
   mv TAPE21 "${inputfile_basename}.t21"
+}
+
+function exec_mopac {
+  if [ -z "$MOPACBIN" ]; then
+    MOPAC=mopac
+  else
+    MOPAC=$MOPACBIN/mopac
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".dat")
+
+  #  $ marathon mopac one.dat two.dat
+  "$MOPAC" "${inputfile_basename}"
 }
 
 function exec_nwchem {
@@ -112,6 +126,9 @@ for inputfile in "$@"; do
     case $program in
       adf)
         exec_adf "$inputfile"
+        ;;
+      mopac)
+        exec_mopac "$inputfile"
         ;;
       nwchem)
         exec_nwchem "$inputfile"
