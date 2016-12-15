@@ -92,35 +92,10 @@ function exec_mopac {
 
   #  $ marathon mopac one.dat two.dat
   "$MOPAC" "${inputfile_basename}"
-  mopac_output_to_xyz "${inputfile_basename}.out"
-  mopac_output_to_mop "${inputfile_basename}.out"
+  mopac_output_to_mop_and_xyz "${inputfile_basename}.out"
 }
 
-function mopac_output_to_xyz {
-  outputfile="$1"
-
-  sed -n -e '/                             CARTESIAN COORDINATES/,/           Empirical Formula/{
-    /CARTESIAN COORDINATES/d
-    /Empirical Formula/d
-    /^$/d
-    p
-  }' "$outputfile" | \
-    awk 'BEGIN {
-      format="%-7s%14.7f%14.7f%14.7f\n"
-    }
-    {
-      printf format, $2, $3, $4, $5
-    }' > "$TEMP_FOLDER/mopout2xyz.txt"
-
-  cat "$TEMP_FOLDER/mopout2xyz.txt" | \
-    wc -l > "${outputfile/.out/.xyz}"
-  grep "FINAL HEAT OF FORMATION" "$outputfile" | \
-    tail -1 | \
-      awk '{print $1, $2, $3, $4, $5, $6, $7}' >> "${outputfile/.out/.xyz}"
-  cat "$TEMP_FOLDER/mopout2xyz.txt" >> "${outputfile/.out/.xyz}"
-}
-
-function mopac_output_to_mop {
+function mopac_output_to_mop_and_xyz {
   outputfile="$1"
 
   if [ -r "${outputfile/.out/.arc}" ]; then
@@ -128,6 +103,8 @@ function mopac_output_to_mop {
       /          FINAL GEOMETRY OBTAINED/d
       p
     }' "${outputfile/.out/.arc}" > "${outputfile/.out/.mop}"
+
+    obabel -imop "${outputfile/.out/.mop}" -O "${outputfile/.out/.xyz}"
   fi
 }
 
