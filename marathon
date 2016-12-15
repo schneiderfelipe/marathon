@@ -93,6 +93,7 @@ function exec_mopac {
   #  $ marathon mopac one.dat two.dat
   "$MOPAC" "${inputfile_basename}"
   mopac_output_to_xyz "${inputfile_basename}.out"
+  mopac_output_to_mop "${inputfile_basename}.out"
 }
 
 function mopac_output_to_xyz {
@@ -117,6 +118,17 @@ function mopac_output_to_xyz {
     tail -1 | \
       awk '{print $1, $2, $3, $4, $5, $6, $7}' >> "${outputfile/.out/.xyz}"
   cat "$TEMP_FOLDER/mopout2xyz.txt" >> "${outputfile/.out/.xyz}"
+}
+
+function mopac_output_to_mop {
+  outputfile="$1"
+
+  if [ -r "${outputfile/.out/.arc}" ]; then
+    sed -n -e '/          FINAL GEOMETRY OBTAINED/,${
+      /          FINAL GEOMETRY OBTAINED/d
+      p
+    }' "${outputfile/.out/.arc}" > "${outputfile/.out/.mop}"
+  fi
 }
 
 function exec_nwchem {
