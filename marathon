@@ -105,6 +105,9 @@ function mopac_output_to_mop_and_xyz {
           sed -e '/FINAL GEOMETRY OBTAINED/d'  > "${outputfile/.out/.mop}"
 
     obabel -imop "${outputfile/.out/.mop}" -O "${outputfile/.out/.xyz}"
+
+    mopcomment=$(sed -n -e '2p' "${outputfile/.out/.mop}")
+    sed -i -e '2s/^.*$/'"${mopcomment}"'/' "${outputfile/.out/.xyz}"
   fi
 }
 
