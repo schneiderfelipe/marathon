@@ -19,7 +19,14 @@ function help_page {
   }' "$0"
 }
 
+TEMP_FOLDER=$(mktemp -d 2>/dev/null || mktemp -d -t 'tmp')
 nprocs=1
+
+function cleanup {
+  rm -rf "$TEMP_FOLDER"
+}
+
+trap cleanup EXIT
 
 # Options:
 while getopts ":hvn:" opt "$@"; do
@@ -85,6 +92,23 @@ function exec_mopac {
 
   #  $ marathon mopac one.dat two.dat
   "$MOPAC" "${inputfile_basename}"
+  mopac_output_to_mop_and_xyz "${inputfile_basename}.out"
+}
+
+function mopac_output_to_mop_and_xyz {
+  outputfile="$1"
+
+  if [ -r "${outputfile/.out/.arc}" ]; then
+    tac "${outputfile/.out/.arc}" | \
+      grep "FINAL GEOMETRY OBTAINED" -m 1 -B 9999 | \
+        tac | \
+          sed -e '/FINAL GEOMETRY OBTAINED/d'  > "${outputfile/.out/.mop}"
+
+    obabel -imop "${outputfile/.out/.mop}" -O "${outputfile/.out/.xyz}"
+
+    mopcomment=$(sed -n -e '2p' "${outputfile/.out/.mop}")
+    sed -i -e '2s/^.*$/'"${mopcomment}"'/' "${outputfile/.out/.xyz}"
+  fi
 }
 
 function exec_nwchem {
