@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=0.4.1
+VERSION=0.5.0
 
 # Usage:
 #   marathon [-n processors] program inputfile [inputfile...]
@@ -42,7 +42,7 @@ while getopts ":hvn:" opt "$@"; do
       exit 0
       ;;
     n)
-      # -n PROCS set number of processors (does not currently work with ORCA or MOPAC)
+      # -n PROCS set number of processors (does not currently work with GENNBO, MOPAC or ORCA)
       nprocs=$OPTARG
       ;;
     \?)
@@ -78,6 +78,28 @@ function exec_adf {
     tee "${inputfile_basename}.out"
 
   mv TAPE21 "${inputfile_basename}.t21"
+}
+
+function exec_gennbo {
+  if [ -z "$GENNBOBIN" ]; then
+    GENNBO=gennbo
+  else
+    GENNBO=$GENNBOBIN/gennbo
+  fi
+
+  inputfile=$1
+
+  if [ ${inputfile: -4} == ".gen" ]; then
+    inputfile_basename=$(basename "$inputfile" ".gen")
+
+    #    $ marathon gennbo *.gen
+    "$GENNBO" < "${inputfile_basename}.gen" > "${inputfile_basename}.nboout"
+  elif [ ${inputfile: -3} == ".47" ]; then
+    inputfile_basename=$(basename "$inputfile" ".47")
+
+    #    $ marathon gennbo *.47
+    "$GENNBO" < "${inputfile_basename}.47" > "${inputfile_basename}.nboout"
+  fi
 }
 
 function exec_mopac {
@@ -151,6 +173,9 @@ for inputfile in "$@"; do
     case $program in
       adf)
         exec_adf "$inputfile"
+        ;;
+      gennbo)
+        exec_gennbo "$inputfile"
         ;;
       mopac)
         exec_mopac "$inputfile"
