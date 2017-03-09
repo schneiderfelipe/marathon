@@ -80,6 +80,22 @@ function exec_adf {
   mv TAPE21 "${inputfile_basename}.t21"
 }
 
+function exec_adfnbo {
+  if [ -z "$ADFBIN" ]; then
+    ADFNBO=adfnbo
+  else
+    ADFNBO=$ADFBIN/adfnbo
+  fi
+
+  #  $ marathon adfnbo
+  "$ADFNBO" <<eor
+write
+fock
+spherical
+end input
+eor
+}
+
 function exec_gennbo {
   if [ -z "$GENNBOBIN" ]; then
     GENNBO=gennbo
@@ -173,6 +189,9 @@ for inputfile in "$@"; do
     case $program in
       adf)
         exec_adf "$inputfile"
+        ;;
+      adfnbo)
+        exec_adfnbo
         ;;
       gennbo)
         exec_gennbo "$inputfile"
