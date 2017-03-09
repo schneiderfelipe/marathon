@@ -87,6 +87,11 @@ function exec_adfnbo {
     ADFNBO=$ADFBIN/adfnbo
   fi
 
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".t21")
+
+  mv "${inputfile_basename}.t21" TAPE21
+
   #  $ marathon adfnbo
   "$ADFNBO" <<eor
 write
@@ -94,6 +99,9 @@ fock
 spherical
 end input
 eor
+
+  mv TAPE21 "${inputfile_basename}.t21"
+  mv FILE47 "${inputfile_basename}.47"
 }
 
 function exec_gennbo {
@@ -191,7 +199,7 @@ for inputfile in "$@"; do
         exec_adf "$inputfile"
         ;;
       adfnbo)
-        exec_adfnbo
+        exec_adfnbo "$inputfile"
         ;;
       gennbo)
         exec_gennbo "$inputfile"
