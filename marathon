@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=0.7.0
+VERSION=0.8.0
 
 # Usage:
 #   marathon [-n processors] program inputfile [inputfile...]
@@ -203,6 +203,20 @@ function exec_orca4 {
     tee "${inputfile_basename}.out"
 }
 
+function exec_psi4 {
+  if [ -z "$PSI4BIN" ]; then
+    PSI4=psi4
+  else
+    PSI4=$PSI4BIN/psi4
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".dat")
+
+  #  $ marathon psi4 benzene.dat
+  "$PSI4" "${inputfile_basename}.dat" "${inputfile_basename}.out"
+}
+
 called_from=$(pwd)
 
 for inputfile in "$@"; do
@@ -230,6 +244,9 @@ for inputfile in "$@"; do
         ;;
       orca4)
         exec_orca4 "$inputfile"
+        ;;
+      psi4)
+        exec_psi4 "$inputfile"
         ;;
     esac
   else
