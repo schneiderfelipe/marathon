@@ -104,6 +104,21 @@ eor
   mv FILE47 "${inputfile_basename}.47"
 }
 
+function exec_g09 {
+  if [ -z "$G09BIN" ]; then
+    G09=g09
+  else
+    G09=$G09/g09
+  fi
+
+  inputfile=$1
+
+  inputfile_basename=$(basename "$inputfile" ".gjf")
+
+  #    $ marathon g09 *.gjf
+  "$G09" < "${inputfile_basename}.gjf" | tee "${inputfile_basename}.out"
+}
+
 function exec_gennbo {
   if [ -z "$GENNBOBIN" ]; then
     GENNBO=gennbo
@@ -229,6 +244,9 @@ for inputfile in "$@"; do
         ;;
       adfnbo)
         exec_adfnbo "$inputfile"
+        ;;
+      g09)
+        exec_g09 "$inputfile"
         ;;
       gennbo)
         exec_gennbo "$inputfile"
