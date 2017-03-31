@@ -21,7 +21,6 @@ ORCA may thus *not* be in `PATH`.
 ## TODO
 
 - (A) Trap some useful signals (e.g. HUP signal) within `marathon`.
-- (B) Set number of threads for ORCA using the command line.
 - (B) Implement quiet mode and make it default.
   - The behaviour of MOPAC now is quiet already.
     Make it show its output in nonquiet/verbose mode.
