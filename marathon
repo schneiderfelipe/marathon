@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=0.9.1
+VERSION=0.10.0
 
 # Usage:
 #   marathon [-n processors] program inputfile [inputfile...]
@@ -42,7 +42,7 @@ while getopts ":hvn:" opt "$@"; do
       exit 0
       ;;
     n)
-      # -n PROCS set number of processors (does not currently work with GENNBO, MOPAC, g09 or ORCA)
+      # -n PROCS set number of processors (does not currently work with GENNBO, MOPAC or g09)
       nprocs=$OPTARG
       ;;
     \?)
@@ -198,7 +198,17 @@ function exec_orca {
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".inp")
 
-  #  $ marathon orca {methane,ethane,n-propane}.inp
+  sed -i -e '/pal/,/end/{
+    /nproc/d
+  }' "$inputfile"
+  sed -i -e '/pal/{
+    N
+    s/^\s*%pal\s*end\s*$//
+  }' "$inputfile"
+
+  printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> ${inputfile}
+
+  #  $ marathon -n 4 orca {methane,ethane,n-propane}.inp
   "$ORCA" "${inputfile_basename}.inp" | \
     tee "${inputfile_basename}.out"
 }
@@ -213,7 +223,17 @@ function exec_orca4 {
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".inp")
 
-  #  $ marathon orca4 {methane,ethane,n-propane}.inp
+  sed -i -e '/pal/,/end/{
+    /nproc/d
+  }' "$inputfile"
+  sed -i -e '/pal/{
+    N
+    s/^\s*%pal\s*end\s*$//
+  }' "$inputfile"
+
+  printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> ${inputfile}
+
+  #  $ marathon -n 4 orca4 {methane,ethane,n-propane}.inp
   "$ORCA4" "${inputfile_basename}.inp" | \
     tee "${inputfile_basename}.out"
 }
@@ -228,7 +248,7 @@ function exec_psi4 {
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".dat")
 
-  #  $ marathon psi4 benzene.dat
+  #  $ marathon -n 6 psi4 benzene.dat
   "$PSI4" -n "$nprocs" "${inputfile_basename}.dat" "${inputfile_basename}.out"
 }
 

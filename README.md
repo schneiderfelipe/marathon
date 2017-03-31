@@ -1,10 +1,19 @@
 # marathon
 
 `marathon` runs sets of computational chemistry calculations in batch.
-It currently supports ADF, NWChem and ORCA.
 
     marathon -n 2 nwchem *.nw
     marathon -h
+
+## Supported software
+
+- [ADF & adfnbo](https://www.scm.com/)
+- [Gaussian](http://gaussian.com/)
+- [GENNBO](http://nbo6.chem.wisc.edu/)
+- [MOPAC](http://openmopac.net/)
+- [NWChem](http://www.nwchem-sw.org/index.php/Main_Page)
+- [ORCA & ORCA4](https://orcaforum.cec.mpg.de/)
+- [Psi4](http://www.psicode.org/)
 
 ## Installation
 
@@ -21,7 +30,6 @@ ORCA may thus *not* be in `PATH`.
 ## TODO
 
 - (A) Trap some useful signals (e.g. HUP signal) within `marathon`.
-- (B) Set number of threads for ORCA using the command line.
 - (B) Implement quiet mode and make it default.
   - The behaviour of MOPAC now is quiet already.
     Make it show its output in nonquiet/verbose mode.
