@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=0.9.1
+VERSION=0.10.0
 
 # Usage:
 #   marathon [-n processors] program inputfile [inputfile...]
@@ -208,7 +208,7 @@ function exec_orca {
 
   printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> ${inputfile}
 
-  #  $ marathon orca {methane,ethane,n-propane}.inp
+  #  $ marathon -n 4 orca {methane,ethane,n-propane}.inp
   "$ORCA" "${inputfile_basename}.inp" | \
     tee "${inputfile_basename}.out"
 }
@@ -233,7 +233,7 @@ function exec_orca4 {
 
   printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> ${inputfile}
 
-  #  $ marathon orca4 {methane,ethane,n-propane}.inp
+  #  $ marathon -n 4 orca4 {methane,ethane,n-propane}.inp
   "$ORCA4" "${inputfile_basename}.inp" | \
     tee "${inputfile_basename}.out"
 }
@@ -248,7 +248,7 @@ function exec_psi4 {
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".dat")
 
-  #  $ marathon psi4 benzene.dat
+  #  $ marathon -n 6 psi4 benzene.dat
   "$PSI4" -n "$nprocs" "${inputfile_basename}.dat" "${inputfile_basename}.out"
 }
 

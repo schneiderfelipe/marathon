@@ -1,10 +1,19 @@
 # marathon
 
 `marathon` runs sets of computational chemistry calculations in batch.
-It currently supports ADF, NWChem and ORCA.
 
     marathon -n 2 nwchem *.nw
     marathon -h
+
+## Supported software
+
+- [ADF & adfnbo](https://www.scm.com/)
+- [Gaussian](http://gaussian.com/)
+- [GENNBO](http://nbo6.chem.wisc.edu/)
+- [MOPAC](http://openmopac.net/)
+- [NWChem](http://www.nwchem-sw.org/index.php/Main_Page)
+- [ORCA & ORCA4](https://orcaforum.cec.mpg.de/)
+- [Psi4](http://www.psicode.org/)
 
 ## Installation
 
