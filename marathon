@@ -24,6 +24,12 @@ nprocs=1
 
 function cleanup {
   rm -rf "$TEMP_FOLDER"
+
+  if [ ! -z "$PSI_SCRATCH" ]; then
+    if [ ! -z "$prefix" ]; then
+      rm -rf $PSI_SCRATCH/${prefix}*
+    fi
+  fi
 }
 
 trap cleanup EXIT
@@ -228,8 +234,15 @@ function exec_psi4 {
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".dat")
 
+  prefix=$(md5sum ${inputfile} | awk '{print $1}')
+
   #  $ marathon psi4 benzene.dat
-  "$PSI4" -n "$nprocs" "${inputfile_basename}.dat" "${inputfile_basename}.out"
+  "$PSI4" -n "$nprocs" -p "${prefix}" \
+    "${inputfile_basename}.dat" "${inputfile_basename}.out"
+
+  if [ ! -z "$PSI_SCRATCH" ]; then
+    rm -rf $PSI_SCRATCH/${prefix}*
+  fi
 }
 
 called_from=$(pwd)
