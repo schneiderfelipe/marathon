@@ -80,8 +80,7 @@ function exec_adf {
   inputfile_basename=$(basename "$inputfile" ".in")
 
   #  $ marathon -n 28 adf *f1.in *f2.in *eda.in
-  "$ADF" -n "$nprocs" < "${inputfile_basename}.in" | \
-    tee "${inputfile_basename}.out"
+  "$ADF" -n "$nprocs" < "${inputfile_basename}.in" > "${inputfile_basename}.out"
 
   mv TAPE21 "${inputfile_basename}.t21"
 }
@@ -122,7 +121,7 @@ function exec_g09 {
   inputfile_basename=$(basename "$inputfile" ".gjf")
 
   #  $ marathon g09 *.gjf
-  "$G09" < "${inputfile_basename}.gjf" | tee "${inputfile_basename}.out"
+  "$G09" < "${inputfile_basename}.gjf" > "${inputfile_basename}.out"
 }
 
 function exec_gennbo {
@@ -190,8 +189,7 @@ function exec_nwchem {
   inputfile_basename=$(basename "$inputfile" ".nw")
 
   #  $ marathon -n 2 nwchem *.nw
-  mpirun -np "$nprocs" "$NWCHEM" "${inputfile_basename}.nw" | \
-    tee "${inputfile_basename}.out"
+  mpirun -np "$nprocs" "$NWCHEM" "${inputfile_basename}.nw" > "${inputfile_basename}.out"
 }
 
 function exec_orca {
@@ -215,8 +213,7 @@ function exec_orca {
   printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> ${inputfile}
 
   #  $ marathon -n 4 orca {methane,ethane,n-propane}.inp
-  "$ORCA" "${inputfile_basename}.inp" | \
-    tee "${inputfile_basename}.out"
+  "$ORCA" "${inputfile_basename}.inp" > "${inputfile_basename}.out"
 }
 
 function exec_orca4 {
@@ -240,8 +237,7 @@ function exec_orca4 {
   printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> ${inputfile}
 
   #  $ marathon -n 4 orca4 {methane,ethane,n-propane}.inp
-  "$ORCA4" "${inputfile_basename}.inp" | \
-    tee "${inputfile_basename}.out"
+  "$ORCA4" "${inputfile_basename}.inp" > "${inputfile_basename}.out"
 }
 
 function exec_psi4 {
