@@ -117,8 +117,11 @@ function exec_g09 {
   fi
 
   inputfile=$1
-
   inputfile_basename=$(basename "$inputfile" ".gjf")
+
+  if grep -q '%chk=' "$inputfile"; then
+    sed -i -e 's/%chk=.*/%chk='"$inputfile_basename"'/' "$inputfile"
+  fi
 
   #  $ marathon g09 *.gjf
   "$G09" < "${inputfile_basename}.gjf" > "${inputfile_basename}.out"
