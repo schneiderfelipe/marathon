@@ -113,15 +113,32 @@ function exec_g09 {
   if [ -z "$G09BIN" ]; then
     G09=g09
   else
-    G09=$G09/g09
+    G09=$G09BIN/g09
   fi
 
   inputfile=$1
-
   inputfile_basename=$(basename "$inputfile" ".gjf")
+
+  if grep -q '%chk=' "$inputfile"; then
+    sed -i -e 's/%chk=.*/%chk='"$inputfile_basename"'/' "$inputfile"
+  fi
 
   #  $ marathon g09 *.gjf
   "$G09" < "${inputfile_basename}.gjf" > "${inputfile_basename}.out"
+}
+
+function exec_gamess {
+  if [ -z "$GAMESSBIN" ]; then
+    GAMESS=rungms
+  else
+    GAMESS=$GAMESSBIN/rungms
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".inp")
+
+  #  $ marathon -n 28 gamess *.inp
+  "$GAMESS" "${inputfile_basename}" 00 1 "$nprocs" >& "${inputfile_basename}.out"
 }
 
 function exec_gennbo {
@@ -276,6 +293,9 @@ for inputfile in "$@"; do
         ;;
       g09)
         exec_g09 "$inputfile"
+        ;;
+      gamess)
+        exec_gamess "$inputfile"
         ;;
       gennbo)
         exec_gennbo "$inputfile"
