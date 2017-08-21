@@ -143,9 +143,17 @@ function exec_gamess {
 
 function exec_gennbo {
   if [ -z "$GENNBOBIN" ]; then
-    GENNBO=gennbo
+    if command -v gennbo6 >/dev/null 2>&1; then
+      GENNBO=gennbo6
+    else
+      GENNBO=gennbo
+    fi
   else
-    GENNBO=$GENNBOBIN/gennbo
+    GENNBO=$GENNBOBIN/gennbo6
+
+    if [ ! -x "$GENNBO" ]; then
+      GENNBO=$GENNBOBIN/gennbo
+    fi
   fi
 
   inputfile=$1
@@ -154,12 +162,20 @@ function exec_gennbo {
     inputfile_basename=$(basename "$inputfile" ".gen")
 
     #    $ marathon gennbo *.gen
-    "$GENNBO" < "${inputfile_basename}.gen" > "${inputfile_basename}.nboout"
+    if [ "${GENNBO: -1}" == '6' ]; then
+      "$GENNBO" "${inputfile_basename}.gen" > "${inputfile_basename}.nboout"
+    else
+      "$GENNBO" < "${inputfile_basename}.gen" > "${inputfile_basename}.nboout"
+    fi
   elif [ ${inputfile: -3} == ".47" ]; then
     inputfile_basename=$(basename "$inputfile" ".47")
 
     #    $ marathon gennbo *.47
-    "$GENNBO" < "${inputfile_basename}.47" > "${inputfile_basename}.nboout"
+    if [ "${GENNBO: -1}" == '6' ]; then
+      "$GENNBO" "${inputfile_basename}.47" > "${inputfile_basename}.nboout"
+    else
+      "$GENNBO" < "${inputfile_basename}.47" > "${inputfile_basename}.nboout"
+    fi
   fi
 }
 
