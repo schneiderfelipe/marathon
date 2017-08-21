@@ -143,9 +143,17 @@ function exec_gamess {
 
 function exec_gennbo {
   if [ -z "$GENNBOBIN" ]; then
-    GENNBO=gennbo
+    if command -v gennbo6 >/dev/null 2>&1; then
+      GENNBO=gennbo6
+    else
+      GENNBO=gennbo
+    fi
   else
-    GENNBO=$GENNBOBIN/gennbo
+    GENNBO=$GENNBOBIN/gennbo6
+
+    if [ ! -x "$GENNBO" ]; then
+      GENNBO=$GENNBOBIN/gennbo
+    fi
   fi
 
   inputfile=$1
