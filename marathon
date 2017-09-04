@@ -111,6 +111,32 @@ eor
   mv FILE47 "${inputfile_basename}.47"
 }
 
+function exec_adfnmr {
+  if [ -z "$ADFBIN" ]; then
+    ADFNMR=nmr
+  else
+    ADFNMR=$ADFBIN/nmr
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".t10")
+
+  mv "${inputfile_basename}.t10" TAPE10
+  mv "${inputfile_basename}.t21" TAPE21
+
+  #  $ marathon adfnmr *.t10
+  "$ADFNMR" <<eor
+NMR
+End
+
+Analysis
+End
+eor
+
+  mv TAPE10 "${inputfile_basename}.t10"
+  mv TAPE21 "${inputfile_basename}.t21"
+}
+
 function exec_g09 {
   if [ -z "$G09BIN" ]; then
     G09=g09
@@ -308,6 +334,9 @@ for inputfile in "$@"; do
         ;;
       adfnbo)
         exec_adfnbo "$inputfile"
+        ;;
+      exec_adfnmr)
+        exec_adfnmr "$inputfile"
         ;;
       g09)
         exec_g09 "$inputfile"
