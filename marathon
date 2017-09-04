@@ -82,6 +82,8 @@ function exec_adf {
   #  $ marathon -n 28 adf *f1.in *f2.in *eda.in
   "$ADF" -n "$nprocs" < "${inputfile_basename}.in" > "${inputfile_basename}.out"
 
+  mv TAPE10 "${inputfile_basename}.t10"
+  mv TAPE15 "${inputfile_basename}.t15"
   mv TAPE21 "${inputfile_basename}.t21"
 }
 
