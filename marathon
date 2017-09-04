@@ -27,7 +27,7 @@ function cleanup {
 
   if [ ! -z "$PSI_SCRATCH" ]; then
     if [ ! -z "$prefix" ]; then
-      rm -rf $PSI_SCRATCH/${prefix}*
+      rm -rf ${PSI_SCRATCH:?}/${prefix}*
     fi
   fi
 }
@@ -82,6 +82,8 @@ function exec_adf {
   #  $ marathon -n 28 adf *f1.in *f2.in *eda.in
   "$ADF" -n "$nprocs" < "${inputfile_basename}.in" > "${inputfile_basename}.out"
 
+  mv TAPE10 "${inputfile_basename}.t10"
+  mv TAPE15 "${inputfile_basename}.t15"
   mv TAPE21 "${inputfile_basename}.t21"
 }
 
@@ -97,7 +99,7 @@ function exec_adfnbo {
 
   mv "${inputfile_basename}.t21" TAPE21
 
-  #  $ marathon adfnbo
+  #  $ marathon adfnbo *.t21
   "$ADFNBO" <<eor
 write
 fock
@@ -107,6 +109,32 @@ eor
 
   mv TAPE21 "${inputfile_basename}.t21"
   mv FILE47 "${inputfile_basename}.47"
+}
+
+function exec_adfnmr {
+  if [ -z "$ADFBIN" ]; then
+    ADFNMR=nmr
+  else
+    ADFNMR=$ADFBIN/nmr
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".t10")
+
+  mv "${inputfile_basename}.t10" TAPE10
+  mv "${inputfile_basename}.t21" TAPE21
+
+  #  $ marathon adfnmr *.t10
+  "$ADFNMR" <<eor
+NMR
+End
+
+Analysis
+End
+eor
+
+  mv TAPE10 "${inputfile_basename}.t10"
+  mv TAPE21 "${inputfile_basename}.t21"
 }
 
 function exec_g09 {
@@ -290,7 +318,7 @@ function exec_psi4 {
     "${inputfile_basename}.dat" "${inputfile_basename}.out"
 
   if [ ! -z "$PSI_SCRATCH" ]; then
-    rm -rf $PSI_SCRATCH/${prefix}*
+    rm -rf ${PSI_SCRATCH:?}/${prefix}*
   fi
 }
 
@@ -298,7 +326,7 @@ called_from=$(pwd)
 
 for inputfile in "$@"; do
   if [ -r "$inputfile" ]; then
-    cd "$(dirname "$inputfile")"
+    cd "$(dirname "$inputfile")" || exit
 
     case $program in
       adf)
@@ -306,6 +334,9 @@ for inputfile in "$@"; do
         ;;
       adfnbo)
         exec_adfnbo "$inputfile"
+        ;;
+      exec_adfnmr)
+        exec_adfnmr "$inputfile"
         ;;
       g09)
         exec_g09 "$inputfile"
@@ -337,7 +368,7 @@ for inputfile in "$@"; do
     exit 1
   fi
 
-  cd "$called_from"
+  cd "$called_from" || exit
 done
 
 # marathon <https://github.com/chemical-scripts/marathon>
