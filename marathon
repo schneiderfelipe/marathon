@@ -27,7 +27,7 @@ function cleanup {
 
   if [ ! -z "$PSI_SCRATCH" ]; then
     if [ ! -z "$prefix" ]; then
-      rm -rf $PSI_SCRATCH/${prefix}*
+      rm -rf ${PSI_SCRATCH:?}/${prefix}*
     fi
   fi
 }
@@ -318,7 +318,7 @@ function exec_psi4 {
     "${inputfile_basename}.dat" "${inputfile_basename}.out"
 
   if [ ! -z "$PSI_SCRATCH" ]; then
-    rm -rf $PSI_SCRATCH/${prefix}*
+    rm -rf ${PSI_SCRATCH:?}/${prefix}*
   fi
 }
 
@@ -326,7 +326,7 @@ called_from=$(pwd)
 
 for inputfile in "$@"; do
   if [ -r "$inputfile" ]; then
-    cd "$(dirname "$inputfile")"
+    cd "$(dirname "$inputfile")" || exit
 
     case $program in
       adf)
@@ -368,7 +368,7 @@ for inputfile in "$@"; do
     exit 1
   fi
 
-  cd "$called_from"
+  cd "$called_from" || exit
 done
 
 # marathon <https://github.com/chemical-scripts/marathon>
