@@ -97,7 +97,7 @@ function exec_adfnbo {
 
   mv "${inputfile_basename}.t21" TAPE21
 
-  #  $ marathon adfnbo
+  #  $ marathon adfnbo *.t21
   "$ADFNBO" <<eor
 write
 fock
