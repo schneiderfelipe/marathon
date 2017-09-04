@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=0.11.0
+VERSION=0.11.1
 
 # Usage:
 #   marathon [-n processors] program inputfile [inputfile...]
@@ -125,7 +125,7 @@ function exec_adfnmr {
   mv "${inputfile_basename}.t21" TAPE21
 
   #  $ marathon adfnmr *.t10
-  "$ADFNMR" <<eor
+  "$ADFNMR" <<eor > "${inputfile_basename}.nmrout"
 NMR
 End
 
@@ -335,7 +335,7 @@ for inputfile in "$@"; do
       adfnbo)
         exec_adfnbo "$inputfile"
         ;;
-      exec_adfnmr)
+      adfnmr)
         exec_adfnmr "$inputfile"
         ;;
       g09)
