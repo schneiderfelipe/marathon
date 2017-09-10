@@ -322,6 +322,20 @@ function exec_psi4 {
   fi
 }
 
+function exec_pwx {
+  if [ -z "$QEBIN" ]; then
+    PWX=pw.x
+  else
+    PWX=$QEBIN/pw.x
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".in")
+
+  #  $ marathon -n 6 pwx benzene.in
+  mpirun -np "$nprocs" "$PWX" < "${inputfile_basename}.in" > "${inputfile_basename}.out"
+}
+
 called_from=$(pwd)
 
 for inputfile in "$@"; do
@@ -361,6 +375,9 @@ for inputfile in "$@"; do
         ;;
       psi4)
         exec_psi4 "$inputfile"
+        ;;
+      pwx)
+        exec_pwx "$inputfile"
         ;;
     esac
   else
