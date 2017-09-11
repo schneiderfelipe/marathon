@@ -137,6 +137,20 @@ eor
   mv TAPE21 "${inputfile_basename}.t21"
 }
 
+function exec_dosx {
+  if [ -z "$QEBIN" ]; then
+    DOSX=dos.x
+  else
+    DOSX=$QEBIN/dos.x
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".in")
+
+  #  $ marathon -n 6 dosx benzene.in
+  mpirun -np "$nprocs" "$DOSX" < "${inputfile_basename}.in" > "${inputfile_basename}.out"
+}
+
 function exec_g09 {
   if [ -z "$G09BIN" ]; then
     G09=g09
@@ -322,6 +336,20 @@ function exec_psi4 {
   fi
 }
 
+function exec_pwx {
+  if [ -z "$QEBIN" ]; then
+    PWX=pw.x
+  else
+    PWX=$QEBIN/pw.x
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".in")
+
+  #  $ marathon -n 6 pwx benzene.in
+  mpirun -np "$nprocs" "$PWX" < "${inputfile_basename}.in" > "${inputfile_basename}.out"
+}
+
 called_from=$(pwd)
 
 for inputfile in "$@"; do
@@ -337,6 +365,9 @@ for inputfile in "$@"; do
         ;;
       adfnmr)
         exec_adfnmr "$inputfile"
+        ;;
+      dosx)
+        exec_dosx "$inputfile"
         ;;
       g09)
         exec_g09 "$inputfile"
@@ -361,6 +392,9 @@ for inputfile in "$@"; do
         ;;
       psi4)
         exec_psi4 "$inputfile"
+        ;;
+      pwx)
+        exec_pwx "$inputfile"
         ;;
     esac
   else
