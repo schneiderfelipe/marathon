@@ -97,6 +97,7 @@ function exec_adfnbo {
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".t21")
 
+  mv "${inputfile_basename}.t15" TAPE15
   mv "${inputfile_basename}.t21" TAPE21
 
   #  $ marathon adfnbo *.t21
@@ -122,6 +123,7 @@ read
 end input
 eor
 
+  mv TAPE15 "${inputfile_basename}.t15"
   mv TAPE21 "${inputfile_basename}.t21"
 }
 
