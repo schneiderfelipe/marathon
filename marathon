@@ -102,13 +102,27 @@ function exec_adfnbo {
   #  $ marathon adfnbo *.t21
   "$ADFNBO" <<eor
 write
-fock
 spherical
+!fock
+end input
+eor
+
+  mv FILE47 "${inputfile_basename}.47"
+  exec_gennbo "${inputfile_basename}.47"
+
+  "$ADFNBO" <<eor
+spherical
+copy
+end input
+eor
+
+  "$ADFNBO" <<eor
+spherical
+read
 end input
 eor
 
   mv TAPE21 "${inputfile_basename}.t21"
-  mv FILE47 "${inputfile_basename}.47"
 }
 
 function exec_adfnmr {
