@@ -125,6 +125,10 @@ eor
 
   mv TAPE15 "${inputfile_basename}.t15"
   mv TAPE21 "${inputfile_basename}.t21"
+
+  for i in adfnbo*; do
+    mv $i ${i/adfnbo/${inputfile_basename}}
+  done
 }
 
 function exec_adfnmr {
