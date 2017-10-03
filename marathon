@@ -316,13 +316,13 @@ function exec_orca {
 
   sed -i -e '/pal/,/end/{
     /nproc/d
-  }' "$inputfile"
+  }' "${inputfile_basename}.inp"
   sed -i -e '/pal/{
     N
     s/^\s*%pal\s*end\s*$//
-  }' "$inputfile"
+  }' "${inputfile_basename}.inp"
 
-  printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> ${inputfile}
+  printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> "${inputfile_basename}.inp"
 
   #  $ marathon -n 4 orca {methane,ethane,n-propane}.inp
   "$ORCA" "${inputfile_basename}.inp" > "${inputfile_basename}.out"
@@ -340,13 +340,13 @@ function exec_orca4 {
 
   sed -i -e '/pal/,/end/{
     /nproc/d
-  }' "$inputfile"
+  }' "${inputfile_basename}.inp"
   sed -i -e '/pal/{
     N
     s/^\s*%pal\s*end\s*$//
-  }' "$inputfile"
+  }' "${inputfile_basename}.inp"
 
-  printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> ${inputfile}
+  printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> "${inputfile_basename}.inp"
 
   #  $ marathon -n 4 orca4 {methane,ethane,n-propane}.inp
   "$ORCA4" "${inputfile_basename}.inp" > "${inputfile_basename}.out"
