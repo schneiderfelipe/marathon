@@ -109,6 +109,7 @@ end input
 eor
 
   mv FILE47 "${inputfile_basename}.47"
+  sed -i "/\$NBO/s/BNDIDX NBONLMO=W AONBO=W AONLMO=W NLMOMO=W FILE=adfnbo DIST \$END/ PRINT=3 bndidx archive plot FILE=adfnbo NLMO \$END/" "${inputfile_basename}.47"
   exec_gennbo "${inputfile_basename}.47"
 
   "$ADFNBO" <<eor
