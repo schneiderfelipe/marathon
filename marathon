@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.1.1
+VERSION=1.2
 
 # Usage:
 #   marathon [-n processors] program inputfile [inputfile...]
@@ -182,8 +182,8 @@ function exec_g09 {
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".gjf")
 
-  if grep -q '%chk=' "$inputfile"; then
-    sed -i -e 's/%chk=.*/%chk='"$inputfile_basename"'/' "$inputfile"
+  if grep -q '%chk=' "$(basename "$inputfile")"; then
+    sed -i -e 's/%chk=.*/%chk='"$inputfile_basename"'/' "$(basename "$inputfile")"
   fi
 
   #  $ marathon g09 *.gjf
