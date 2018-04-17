@@ -198,7 +198,7 @@ function exec_g09 {
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".gjf")
 
-  if grep -q '%chk=' "$(basename "$inputfile")"; then
+  if grep -i -q '%chk=' "$(basename "$inputfile")"; then
     sed -i -e 's/%chk=.*/%chk='"$inputfile_basename"'/' "$(basename "$inputfile")"
   fi
 
