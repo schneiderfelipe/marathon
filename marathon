@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.2
+VERSION=1.3
 
 # Usage:
 #   marathon [-n processors] program inputfile [inputfile...]
@@ -85,6 +85,22 @@ function exec_adf {
   mv TAPE10 "${inputfile_basename}.t10"
   mv TAPE15 "${inputfile_basename}.t15"
   mv TAPE21 "${inputfile_basename}.t21"
+}
+
+function exec_band {
+  if [ -z "$ADFBIN" ]; then
+    BAND=band
+  else
+    BAND=$ADFBIN/band
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".in")
+
+  #  $ marathon band *.in
+  NSCM="$nprocs" "$BAND" < "${inputfile_basename}.in" > "${inputfile_basename}.out"
+
+  mv RUNKF "${inputfile_basename}.runkf"
 }
 
 function exec_adfnbo {
@@ -386,6 +402,9 @@ for inputfile in "$@"; do
         ;;
       adfnmr)
         exec_adfnmr "$inputfile"
+        ;;
+      band)
+        exec_band "$inputfile"
         ;;
       dosx)
         exec_dosx "$inputfile"
