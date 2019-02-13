@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.3
+VERSION=1.4
 
 # Usage:
 #   marathon [-n processors] program inputfile [inputfile...]
@@ -172,6 +172,23 @@ eor
 
   mv TAPE10 "${inputfile_basename}.t10"
   mv TAPE21 "${inputfile_basename}.t21"
+}
+
+function exec_adf2aim {
+  if [ -z "$ADFBIN" ]; then
+    ADF2AIM=adf2aim
+  else
+    ADF2AIM=$ADFBIN/adf2aim
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".t21")
+
+  #  $ marathon adf2aim *.t21
+  "$ADF2AIM" "${inputfile}"
+
+  mv WFN "${inputfile_basename}.wfn"
+  mv rdt21.res "${inputfile_basename}.rdt21.res"
 }
 
 function exec_dosx {
@@ -399,6 +416,9 @@ for inputfile in "$@"; do
         ;;
       adfnbo)
         exec_adfnbo "$inputfile"
+        ;;
+      adf2aim)
+        exec_adf2aim "$inputfile"
         ;;
       adfnmr)
         exec_adfnmr "$inputfile"
