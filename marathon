@@ -70,7 +70,7 @@ shift
 # Examples:
 
 function exec_adf {
-  if [ -z $ADFBIN ]; then
+  if [ -z "$ADFBIN" ]; then
     ADF=adf
   else
     ADF=$ADFBIN/adf
@@ -312,7 +312,7 @@ function mopac_output_to_mop_and_xyz {
 }
 
 function exec_nwchem {
-  if [ -z $NWCHEMBIN ]; then
+  if [ -z "$NWCHEMBIN" ]; then
     NWCHEM=nwchem
   else
     NWCHEM=$NWCHEMBIN/nwchem
@@ -326,7 +326,7 @@ function exec_nwchem {
 }
 
 function exec_orca {
-  if [ -z $ORCABIN ]; then
+  if [ -z "$ORCABIN" ]; then
     ORCA=orca
   else
     ORCA=$ORCABIN/orca
@@ -385,7 +385,7 @@ function exec_psi4 {
 
   prefix=$(md5sum ${inputfile} | awk '{print $1}')
 
-  #  $ marathon psi4 benzene.dat
+  #  $ marathon -n 6 psi4 benzene.dat
   "$PSI4" -n "$nprocs" -p "${prefix}" \
     "${inputfile_basename}.dat" "${inputfile_basename}.out"
 
