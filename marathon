@@ -221,6 +221,10 @@ function exec_g09 {
 
   #  $ marathon g09 *.gjf
   "$G09" < "${inputfile_basename}.gjf" > "${inputfile_basename}.out"
+
+  if grep -q '%chk='"$inputfile_basename" "$(basename -- "$inputfile")"; then
+    formchk "${inputfile_basename}.chk"
+  fi
 }
 
 function exec_gamess {
