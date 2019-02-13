@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.4
+VERSION=1.5
 
 # Usage:
 #   marathon [-n processors] program inputfile [inputfile...]
