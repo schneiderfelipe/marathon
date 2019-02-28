@@ -1,5 +1,5 @@
 #!/bin/bash
-VERSION=1.5
+VERSION=1.6
 
 # Usage:
 #   marathon [-n processors] program inputfile [inputfile...]
@@ -335,10 +335,37 @@ function exec_nwchem {
 }
 
 function exec_orca {
-  if [ -z "$ORCABIN" ]; then
-    ORCA=orca
+  echo "Please be specific about the version of the ORCA package."
+  echo "The following are available (if your system is properly set):"
+  echo "$ marathon [...] orca3  [...]"
+  echo "$ marathon [...] orca4  [...]"
+  echo "$ marathon [...] orca41 [...]"
+}
+
+function orcabin_info {
+  echo "Use a different environment variable for each of the supported"
+  echo "ORCA package versions as follows:"
+  echo "$ export ORCA3BIN=\"...\"   -> For ORCA 3.x.x".
+  echo "$ export ORCA4BIN=\"...\"   -> For ORCA 4.0.x".
+  echo "$ export ORCA41BIN=\"...\"  -> For ORCA 4.1.x".
+}
+
+function orcabin_deprecation_warning {
+  echo "WARNING: the environment variable ORCABIN is deprecated since v. 1.6."
+  orcabin_info
+}
+
+function exec_orca3 {
+  if [ ! -z "$ORCABIN" ]; then
+    orcabin_deprecation_warning
+    exit
+  fi
+
+  if [ -z "$ORCA3BIN" ]; then
+    orcabin_info
+    exit
   else
-    ORCA=$ORCABIN/orca
+    ORCA3=$ORCA3BIN/orca
   fi
 
   inputfile=$1
@@ -354,13 +381,19 @@ function exec_orca {
 
   printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> "${inputfile_basename}.inp"
 
-  #  $ marathon -n 4 orca {methane,ethane,n-propane}.inp
-  "$ORCA" "${inputfile_basename}.inp" > "${inputfile_basename}.out"
+  #  $ marathon -n 4 orca3 {methane,ethane,n-propane}.inp
+  "$ORCA3" "${inputfile_basename}.inp" > "${inputfile_basename}.out"
 }
 
 function exec_orca4 {
+  if [ ! -z "$ORCABIN" ]; then
+    orcabin_deprecation_warning
+    exit
+  fi
+
   if [ -z "$ORCA4BIN" ]; then
-    ORCA4=orca
+    orcabin_info
+    exit
   else
     ORCA4=$ORCA4BIN/orca
   fi
@@ -380,6 +413,36 @@ function exec_orca4 {
 
   #  $ marathon -n 4 orca4 {methane,ethane,n-propane}.inp
   "$ORCA4" "${inputfile_basename}.inp" > "${inputfile_basename}.out"
+}
+
+function exec_orca41 {
+  if [ ! -z "$ORCABIN" ]; then
+    orcabin_deprecation_warning
+    exit
+  fi
+
+  if [ -z "$ORCA41BIN" ]; then
+    orcabin_info
+    exit
+  else
+    ORCA41=$ORCA41BIN/orca
+  fi
+
+  inputfile=$1
+  inputfile_basename=$(basename "$inputfile" ".inp")
+
+  sed -i -e '/pal/,/end/{
+    /nproc/d
+  }' "${inputfile_basename}.inp"
+  sed -i -e '/pal/{
+    N
+    s/^\s*%pal\s*end\s*$//
+  }' "${inputfile_basename}.inp"
+
+  printf "%%pal\n nprocs %d\nend\n" "${nprocs}" >> "${inputfile_basename}.inp"
+
+  #  $ marathon -n 4 orca41 {methane,ethane,n-propane}.inp
+  "$ORCA41" "${inputfile_basename}.inp" > "${inputfile_basename}.out"
 }
 
 function exec_psi4 {
@@ -460,8 +523,14 @@ for inputfile in "$@"; do
       orca)
         exec_orca "$inputfile"
         ;;
+      orca3)
+        exec_orca3 "$inputfile"
+        ;;
       orca4)
         exec_orca4 "$inputfile"
+        ;;
+      orca41)
+        exec_orca41 "$inputfile"
         ;;
       psi4)
         exec_psi4 "$inputfile"
