@@ -368,6 +368,10 @@ function exec_orca3 {
     ORCA3=$ORCA3BIN/orca
   fi
 
+  if [ ! -z "$ORCA3LIB" ]; then
+    export LD_LIBRARY_PATH="${ORCA3LIB}:$LD_LIBRARY_PATH"
+  fi
+
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".inp")
 
@@ -398,6 +402,10 @@ function exec_orca4 {
     ORCA4=$ORCA4BIN/orca
   fi
 
+  if [ ! -z "$ORCA4LIB" ]; then
+    export LD_LIBRARY_PATH="${ORCA4LIB}:$LD_LIBRARY_PATH"
+  fi
+
   inputfile=$1
   inputfile_basename=$(basename "$inputfile" ".inp")
 
@@ -426,6 +434,10 @@ function exec_orca41 {
     exit
   else
     ORCA41=$ORCA41BIN/orca
+  fi
+
+  if [ ! -z "$ORCA41LIB" ]; then
+    export LD_LIBRARY_PATH="${ORCA41LIB}:$LD_LIBRARY_PATH"
   fi
 
   inputfile=$1
